@@ -14,11 +14,10 @@ describe('ngPdf', function() {
     var $document = _$document_;
     $scope = $rootScope.$new();
     // Compile a piece of HTML containing the directive
-    var html = '<ng-pdf template-url="partials/viewer.html" canvasid="pdf" scale="page-fit" page=13></ng-pdf>';
+    var html = '<ng-pdf pdfurl="/pdf/relativity.pdf" template-url="partials/viewer.html" canvasid="pdf" scale="page-fit" page=13></ng-pdf>';
     var elmnt = angular.element(html);
     $document.find('body').append(elmnt);
     element = $compile(elmnt)($scope);
-    $scope.pdfUrl = '/pdf/relativity.pdf';
     $scope.$digest();
   }));
 

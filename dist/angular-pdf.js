@@ -36,7 +36,9 @@
       },
       link: function(scope, element, attrs) {
         element.css('display', 'block');
-        var url = scope.pdfUrl;
+        var url = attrs.pdfurl;
+        console.log('url:', url);
+
         var httpHeaders = scope.httpHeaders;
         var pdfDoc = null;
         var pageToDisplay = isFinite(attrs.page) ? parseInt(attrs.page) : 1;
@@ -50,14 +52,17 @@
         var ctx = canvas.getContext('2d');
         var windowEl = angular.element($window);
 
+        PDFJS.disableWorker = true;
+        scope.pageNum = pageToDisplay;
+
+        /*jshint latedef: nofunc*/
+        renderPDF();
+
         windowEl.on('scroll', function() {
           scope.$apply(function() {
             scope.scroll = windowEl[0].scrollY;
           });
         });
-
-        PDFJS.disableWorker = true;
-        scope.pageNum = pageToDisplay;
 
         scope.renderPage = function(num) {
           if (renderTask) {
@@ -163,7 +168,7 @@
           if (httpHeaders) {
             params.httpHeaders = httpHeaders;
           }
-
+          console.log('rendering', url);
           if (url && url.length) {
             pdfLoaderTask = PDFJS.getDocument(params, null, null, scope.onProgress);
             pdfLoaderTask.then(
@@ -193,23 +198,6 @@
           scope.pageToDisplay = parseInt(newVal);
           if (pdfDoc !== null) {
             scope.renderPage(scope.pageToDisplay);
-          }
-        });
-
-        scope.$watch('pdfUrl', function(newVal) {
-          if (newVal !== '') {
-            if (debug) {
-              console.log('pdfUrl value change detected: ', scope.pdfUrl);
-            }
-            url = newVal;
-            scope.pageNum = scope.pageToDisplay = pageToDisplay;
-            if (pdfLoaderTask) {
-                pdfLoaderTask.destroy().then(function () {
-                    renderPDF();
-                });
-            } else {
-                renderPDF();
-            }
           }
         });
 
